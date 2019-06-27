@@ -6,7 +6,14 @@ $root = TkRoot.new('title' => 'N++ Palette Creator')
 class ColorSelection < TkFrame
   def initialize(frame, object, row, column)
     super(frame)
-    @button = TkButton.new(self, 'text' => '', 'width' => 2, 'height' => 2, 'background' => ('#' + object[:color])).pack('side' => 'left')
+    @button = TkButton.new(self){
+      text ''
+      width 2
+      height 2
+      background ('#' + object[:color])
+      command proc{ Tk.chooseColor('initialcolor' => ('#' + object[:color])) }
+    }
+    @button.pack('side' => 'left')
     @text = TkLabel.new(self, 'anchor' => 'w', 'text' => object[:text]).pack('side' => 'left')
     self.grid('row' => row, 'column' => column, 'sticky' => 'w')
   end
@@ -57,6 +64,6 @@ def create_palette
   create_file(folder: $palette_name.get(), colors: $objects['background'].map(&:color))
 end
 
-create = TkButton.new($root, 'text' => 'Create palette', 'command' => (proc {create_palette})).pack('side' => 'bottom', 'fill' => 'x', 'expand' => 1)
+create = TkButton.new($root, 'text' => 'Create palette', 'command' => (proc{ create_palette })).pack('side' => 'bottom', 'fill' => 'x', 'expand' => 1)
 
 Tk.mainloop
