@@ -6,9 +6,9 @@ $root = TkRoot.new('title' => 'N++ Palette Creator')
 class ColorSelection < TkFrame
   def initialize(frame, object, row, column)
     super(frame)
-    @button = TkButton.new(frame, 'text' => '', 'width' => 2, 'height' => 2, 'background' => ('#' + object.color)).pack('side' => 'left')
-    @text = TkLabel.new(frame, 'text' => object.text).pack('side' => 'left')
-    self.grid('row' => row, 'column' => column)
+    @button = TkButton.new(self, 'text' => '', 'width' => 2, 'height' => 2, 'background' => ('#' + object[:color])).pack('side' => 'left')
+    @text = TkLabel.new(self, 'anchor' => 'w', 'text' => object[:text]).pack('side' => 'left')
+    self.grid('row' => row, 'column' => column, 'sticky' => 'w')
   end
 end
 
@@ -25,7 +25,7 @@ tabs.each do |tab, frame|
   notebook.add(frame, 'text' => tab)
 end
 $palette_name = TkEntry.new($root).insert(0, 'palette_name').pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
-#ColorSelection.new(tabs['Objects'], $objects['background'][0], 0, 0)
+$objects['background'].each_with_index{ |o, i| ColorSelection.new(tabs['Objects'], o, i, 0) }
 
 def create_file(name: "themeImage", colors: ["4D564F", "87948C"], folder: Dir.pwd)
   Dir.chdir(folder) do
@@ -54,7 +54,7 @@ end
 
 def create_palette
   Dir.mkdir($palette_name.get()) unless File.exists?($palette_name.get())
-  create_file(folder: $palette_name.get())
+  create_file(folder: $palette_name.get(), colors: $objects['background'].map(&:color))
 end
 
 create = TkButton.new($root, 'text' => 'Create palette', 'command' => (proc {create_palette})).pack('side' => 'bottom', 'fill' => 'x', 'expand' => 1)
