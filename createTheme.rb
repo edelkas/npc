@@ -2,16 +2,24 @@ require 'tk'
 require_relative 'colors.rb'
 
 $root = TkRoot.new('title' => 'N++ Palette Creator')
+load_palette = TkButton.new($root, 'text' => 'Load palette', 'command' => (proc{ create_palette })).pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
 
 class ColorSelection < TkFrame
   def initialize(frame, object, row, column)
     super(frame)
+    @object = object
     @button = TkButton.new(self){
       text ''
       width 2
       height 2
       background ('#' + object[:color])
-      command proc{ Tk.chooseColor('initialcolor' => ('#' + object[:color])) }
+      command proc{
+        color = Tk.chooseColor('initialcolor' => self.cget('background'))
+        if color.is_a?(String) && color.size > 2
+          self.configure('background', color)
+          @object[:color] = color
+        end
+      }
     }
     @button.pack('side' => 'left')
     @text = TkLabel.new(self, 'anchor' => 'w', 'text' => object[:text]).pack('side' => 'left')
@@ -31,7 +39,6 @@ tabs = {
 tabs.each do |tab, frame|
   notebook.add(frame, 'text' => tab)
 end
-$palette_name = TkEntry.new($root).insert(0, 'palette_name').pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
 $objects['background'].each_with_index{ |o, i| ColorSelection.new(tabs['Objects'], o, i, 0) }
 
 def create_file(name: "themeImage", colors: ["4D564F", "87948C"], folder: Dir.pwd)
@@ -64,6 +71,7 @@ def create_palette
   create_file(folder: $palette_name.get(), colors: $objects['background'].map(&:color))
 end
 
-create = TkButton.new($root, 'text' => 'Create palette', 'command' => (proc{ create_palette })).pack('side' => 'bottom', 'fill' => 'x', 'expand' => 1)
+palette_name = TkEntry.new($root).insert(0, 'palette_name').pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
+create_palette = TkButton.new($root, 'text' => 'Create palette', 'command' => (proc{ create_palette })).pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
 
 Tk.mainloop
