@@ -4,7 +4,16 @@ require_relative 'colors.rb'
 $root = TkRoot.new('title' => 'N++ Palette Creator')
 load_palette = TkButton.new($root, 'text' => 'Load palette', 'command' => (proc{ create_palette })).pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
 
+def change_color(button)
+  color = Tk.chooseColor('initialcolor' => button.cget('background'))
+  if color.is_a?(String) && color.size > 2
+    button.configure('background', color)
+    button.object[:color] = color
+  end
+end
+
 class ColorSelection < TkFrame
+  attr_accessor :object
   def initialize(frame, object, row, column)
     super(frame)
     @object = object
@@ -13,13 +22,7 @@ class ColorSelection < TkFrame
       width 2
       height 2
       background ('#' + object[:color])
-      command proc{
-        color = Tk.chooseColor('initialcolor' => self.cget('background'))
-        if color.is_a?(String) && color.size > 2
-          self.configure('background', color)
-          @object[:color] = color
-        end
-      }
+      command proc{ change_color(self) }
     }
     @button.pack('side' => 'left')
     @text = TkLabel.new(self, 'anchor' => 'w', 'text' => object[:text]).pack('side' => 'left')
