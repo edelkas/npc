@@ -25,7 +25,7 @@ class ColorSelection < TkFrame
     color = Tk.chooseColor('initialcolor' => @button.cget('background'))
     if color.is_a?(String) && color.size > 2
       @button.configure('background', color)
-      @object[:color] = color
+      @object[:color] = color[1..-1]
     end
   end
 end
