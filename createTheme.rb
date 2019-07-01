@@ -2,15 +2,7 @@ require 'tk'
 require_relative 'colors.rb'
 
 $root = TkRoot.new('title' => 'N++ Palette Creator')
-load_palette = TkButton.new($root, 'text' => 'Load palette', 'command' => (proc{ create_palette })).pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
-
-def change_color(button)
-  color = Tk.chooseColor('initialcolor' => button.cget('background'))
-  if color.is_a?(String) && color.size > 2
-    button.configure('background', color)
-    button.object[:color] = color
-  end
-end
+TkButton.new($root, 'text' => 'Load palette', 'command' => (proc{ create_palette })).pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
 
 class ColorSelection < TkFrame
   attr_accessor :object
@@ -22,11 +14,19 @@ class ColorSelection < TkFrame
       width 2
       height 2
       background ('#' + object[:color])
-      command proc{ change_color(self) }
     }
+    @button.command(proc{ change_color })
     @button.pack('side' => 'left')
     @text = TkLabel.new(self, 'anchor' => 'w', 'text' => object[:text]).pack('side' => 'left')
     self.grid('row' => row, 'column' => column, 'sticky' => 'w')
+  end
+
+  def change_color
+    color = Tk.chooseColor('initialcolor' => @button.cget('background'))
+    if color.is_a?(String) && color.size > 2
+      @button.configure('background', color)
+      @object[:color] = color
+    end
   end
 end
 
@@ -61,7 +61,7 @@ def create_file(name: "themeImage", colors: ["4D564F", "87948C"], folder: Dir.pw
       (0..63).each do |row|
         colors.each do |color|
           # \xBF: First bit set to 1 indicates RLE data, last 7 bits indicate the count, in this case, 64.
-          image << "\xBF".force_encoding('ASCII-8BIT') + [color].pack('H*')
+          image << "\xBF".force_encoding('ASCII-8BIT') + [color.scan(/../).reverse.join].pack('H*')
         end
       end
       f.write(image)
@@ -71,10 +71,12 @@ end
 
 def create_palette
   Dir.mkdir($palette_name.get()) unless File.exists?($palette_name.get())
-  create_file(folder: $palette_name.get(), colors: $objects['background'].map(&:color))
+  $objects.each{ |file, colors|
+    create_file(folder: $palette_name.get(), name: file, colors: colors.map{ |o| o[:color] })
+  }
 end
 
-palette_name = TkEntry.new($root).insert(0, 'palette_name').pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
-create_palette = TkButton.new($root, 'text' => 'Create palette', 'command' => (proc{ create_palette })).pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
+$palette_name = TkEntry.new($root).insert(0, 'palette_name').pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
+TkButton.new($root, 'text' => 'Create palette', 'command' => (proc{ create_palette })).pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
 
 Tk.mainloop
