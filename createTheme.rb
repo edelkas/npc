@@ -5,7 +5,10 @@ $root = TkRoot.new('title' => 'N++ Palette Creator')
 TkButton.new($root, 'text' => 'Load palette', 'command' => (proc{ parse_palette })).pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
 
 class ColorSelection < TkFrame
-  attr_accessor :object
+
+  @@blocks = []
+
+  attr_accessor :object, :button
   def initialize(frame, object, row, column)
     super(frame)
     @object = object
@@ -19,6 +22,13 @@ class ColorSelection < TkFrame
     @button.pack('side' => 'left')
     @text = TkLabel.new(self, 'anchor' => 'w', 'text' => object[:text]).pack('side' => 'left')
     self.grid('row' => row, 'column' => column, 'sticky' => 'w')
+    @@blocks << self
+  end
+
+  def self.update_colors
+    @@blocks.each{ |b|
+      b.button.configure('background', '#' + b.object[:color])
+    }
   end
 
   def change_color
@@ -83,14 +93,14 @@ def parse_file(name: "themeImage", folder: Dir.pwd)
     height = file[14..15].reverse.unpack('H*')[0].to_i(16)
     return "File \"#{name}.tga\" doesn't have the right height (has #{height} pixels, should be 64)." if height != 64
     pixel_depth = file[16].unpack('H*')[0].to_i(16)
-    return "File \"#{name}.tga\" has an unknown pixel depth." if pixel_depth % 8 != 0
+    return "File \"#{name}.tga\" has an unsupported pixel depth." if ![24, 32].include?(pixel_depth)
     pixel_depth = pixel_depth / 8
     width = file[12..13].reverse.unpack('H*')[0].to_i(16)
-    colors = width / 64
-    return "File \"#{name}.tga\" doesn't have the right amount of colors (has #{colors}, should have #{$objects[name].size})." if colors != $objects[name].size
+    num_colors = width / 64
+    return "File \"#{name}.tga\" doesn't have the right amount of colors (has #{colors}, should have #{$objects[name].size})." if num_colors != $objects[name].size
     initial = (file[2] != "\x0A" ? 18 + pixel_depth * 32 * width + pixel_depth * 32 : 19)
     step = (file[2] != "\x0A" ? pixel_depth * 64 : pixel_depth + 1)
-    (0 .. colors - 1).each{ |i|
+    (0 .. num_colors - 1).each{ |i|
       color_code = file[initial + step * i .. initial + step * i + pixel_depth - 1]
       colors << color_code[0..2].reverse.unpack('H*')[0].upcase
     }
@@ -116,7 +126,7 @@ def parse_palette
     if parse.instance_of?(String)
       Tk.messageBox('type' => 'ok', 'icon' => 'error', 'title' => 'Error loading palette', 'message' => parse)
       next
-    elsif parse.instace_of?(Array)
+    elsif parse.instance_of?(Array)
       parse.each_with_index{ |color, i|
         colors[i][:color] = color
       }
@@ -124,6 +134,7 @@ def parse_palette
       Tk.messageBox('type' => 'ok', 'icon' => 'error', 'title' => 'Error loading palette', 'message' => 'Unknown error loading palette, please contact Eddy.')
     end
   }
+  ColorSelection.update_colors
 end
 
 $palette_name = TkEntry.new($root).insert(0, 'palette_name').pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
