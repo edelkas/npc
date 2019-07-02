@@ -2,7 +2,7 @@ require 'tk'
 require_relative 'colors.rb'
 
 $root = TkRoot.new('title' => 'N++ Palette Creator')
-TkButton.new($root, 'text' => 'Load palette', 'command' => (proc{ create_palette })).pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
+TkButton.new($root, 'text' => 'Load palette', 'command' => (proc{ parse_palette })).pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
 
 class ColorSelection < TkFrame
   attr_accessor :object
@@ -73,6 +73,56 @@ def create_palette
   Dir.mkdir($palette_name.get()) unless File.exists?($palette_name.get())
   $objects.each{ |file, colors|
     create_file(folder: $palette_name.get(), name: file, colors: colors.map{ |o| o[:color] })
+  }
+end
+
+def parse_file(name: "themeImage", folder: Dir.pwd)
+  colors = []
+  Dir.chdir(folder) do
+    file = File.binread(name + ".tga")
+    height = file[14..15].reverse.unpack('H*')[0].to_i(16)
+    return "File \"#{name}.tga\" doesn't have the right height (has #{height} pixels, should be 64)." if height != 64
+    pixel_depth = file[16].unpack('H*')[0].to_i(16)
+    return "File \"#{name}.tga\" has an unknown pixel depth." if pixel_depth % 8 != 0
+    pixel_depth = pixel_depth / 8
+    width = file[12..13].reverse.unpack('H*')[0].to_i(16)
+    colors = width / 64
+    return "File \"#{name}.tga\" doesn't have the right amount of colors (has #{colors}, should have #{$objects[name].size})." if colors != $objects[name].size
+    initial = (file[2] != "\x0A" ? 18 + pixel_depth * 32 * width + pixel_depth * 32 : 19)
+    step = (file[2] != "\x0A" ? pixel_depth * 64 : pixel_depth + 1)
+    (0 .. colors - 1).each{ |i|
+      color_code = file[initial + step * i .. initial + step * i + pixel_depth - 1]
+      colors << color_code[0..2].reverse.unpack('H*')[0].upcase
+    }
+  end
+  return colors
+#rescue => e
+#  return "File \"#{name}.tga\" is an invalid .tga palette file:\n\n #{e}"
+end
+
+def parse_palette
+  dir = Tk.chooseDirectory
+  return if !(dir.instance_of?(String) && !dir.empty?)
+  Dir.chdir(dir) do
+    non_existent = $objects.keys.select{ |f| !File.exists?(f + ".tga") }.compact
+    if non_existent.size > 0
+      message = "The following files from the palette are missing: #{non_existent.join("\n")}"
+      Tk.messageBox('type' => 'ok', 'icon' => 'error', 'title' => 'Error loading palette', 'message' => message)
+      return
+    end
+  end
+  $objects.each{ |file, colors|
+    parse = parse_file(name: file, folder: dir)
+    if parse.instance_of?(String)
+      Tk.messageBox('type' => 'ok', 'icon' => 'error', 'title' => 'Error loading palette', 'message' => parse)
+      next
+    elsif parse.instace_of?(Array)
+      parse.each_with_index{ |color, i|
+        colors[i][:color] = color
+      }
+    else
+      Tk.messageBox('type' => 'ok', 'icon' => 'error', 'title' => 'Error loading palette', 'message' => 'Unknown error loading palette, please contact Eddy.')
+    end
   }
 end
 

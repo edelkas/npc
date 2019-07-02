@@ -76,8 +76,8 @@ menu = [
   {text: "Profile: Remaining text and percentages (see 14, 15). Story: Text. Options: Selected text, little bar in scrollbar. Credits: Header text.", color: "ECFFDF"},
   {text: "Leaderboards: Other player's ranks, your name (see 3, 14). Also, messages that appear in the leaderboard (\"Server error\", \"Player 2 needed for score submission\", race options header, etc). Profile: Death count bars. Editor: Header text in side panel, messages when publishing, naming, etc.", color: "ECFFDF"},
   {text: "\"Color / Music\" and \"Social\" menus header text (see 30). The other text is the same, but more transparent.", color: "323323"},
-  {text: "Replay inputs.", color: "323323"},
-  {text: "Pause menu and editor panels text.", color: "CBDCC1"},
+  {text: "Replay inputs. Pause menu and editor panels unselected text (see 20).", color: "323323"},
+  {text: "Pause menu and editor panels selected text (see 19).", color: "CBDCC1"},
   {text: "Pause menu and editor panels background.", color: "8C9487"},
   {text: "Pause menu and editor panels outline.", color: "4F564D"},
   {text: "Outline for selected episode / level / panel. Separator between level name and info. Level loading spiral. Scroll bar and its triangle in level view and in the editor level list. Also \"Server error\" when loading userlevels.", color: "ECFFDF"},
@@ -103,7 +103,7 @@ menu = [
 ]
 timeBar = [
   {text: "Background of the bar with the time left.", color: "FECC04"},
-  {text: "?", color: "DF9B43"},
+  {text: "Hardcore timebar portion that shows extra time on completion.", color: "DF9B43"},
   {text: "Background of the rest of the bar.", color: "707A6B"},
   {text: "?", color: "707A6B"},
   {text: "Numbers.", color: "444B43"},
@@ -113,21 +113,21 @@ timeBar = [
 ]
 timeBarRace = [
   {text: "Text \"Player 2/3/4 press X\" in the menu.", color: "889382"},
-  {text: "Text \"Player 2 ready\" in the menu.", color: "FFFFFF"},
   {text: "Text \"Player 1\" in the menu (the \"ready\" is controlled by #3 in headbands.tga).", color: "EDDC54"},
+  {text: "Text \"Player 2 ready\" in the menu.", color: "FFFFFF"},
   {text: "Text \"Player 3 ready\" in the menu.", color: "8B9CF7"},
   {text: "Text \"Player 4 ready\" in the menu.", color: "EA6899"},
-  {text: "Player 2 timerbar outline.", color: "000000"},
-  {text: "Player 2 timerbar background.", color: "7C7B7B"},
-  {text: "Player 2 timerbar numbers.", color: "FFFFFF"},
-  {text: "Player 3 timerbar outline.", color: "EDDC54"},
-  {text: "Player 3 timerbar background.", color: "FDF4B7"},
-  {text: "Player 3 timerbar numbers.", color: "000000"},
-  {text: "Player 1 timerbar outline.", color: "5068E4"},
-  {text: "Player 1 timerbar background.", color: "8B9CF7"},
-  {text: "Player 1 timerbar numbers.", color: "FFFFFF"},
-  {text: "Player 4 timerbar outline.", color: "D0306C"},
-  {text: "Player 4 timerbar background.", color: "EA6899"},
+  {text: "Player 1 timebar outline.", color: "5068E4"},
+  {text: "Player 1 timebar background.", color: "8B9CF7"},
+  {text: "Player 1 timebar numbers.", color: "FFFFFF"},
+  {text: "Player 2 timebar outline.", color: "000000"},
+  {text: "Player 2 timebar background.", color: "7C7B7B"},
+  {text: "Player 2 timebar numbers.", color: "FFFFFF"},
+  {text: "Player 3 timebar outline.", color: "EDDC54"},
+  {text: "Player 3 timebar background.", color: "FDF4B7"},
+  {text: "Player 3 timebar numbers.", color: "000000"},
+  {text: "Player 4 timebar outline.", color: "D0306C"},
+  {text: "Player 4 timebar background.", color: "EA6899"},
   {text: "Player 4 timebar numbers.", color: "FFFFFF"}
 ]
 ninja = [
