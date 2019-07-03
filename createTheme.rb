@@ -2,8 +2,10 @@ require 'tk'
 require_relative 'colors.rb'
 
 $root = TkRoot.new('title' => 'N++ Palette Creator')
+$root.grid_rowconfigure(1, 'weight' => 1)
+$root.grid_columnconfigure(0, 'weight' => 1)
 
-TkButton.new($root, 'text' => 'Load palette', 'command' => (proc{ parse_palette })).pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
+TkButton.new($root, 'text' => 'Load palette', 'command' => (proc{ parse_palette })).grid('row' => 0, 'column' => 0, 'sticky' => 'ew')
 
 class ColorSelection < TkFrame
 
@@ -41,20 +43,26 @@ class ColorSelection < TkFrame
   end
 end
 
-notebook = Tk::Tile::Notebook.new($root).pack('side' => 'top', 'fill' => 'both', 'expand' => 1)
+notebook = Tk::Tile::Notebook.new($root).grid('row' => 1, 'column' => 0, 'sticky' => 'ewns')
+notebook.grid_rowconfigure(0, 'weight' => 1)
+notebook.grid_columnconfigure(0, 'weight' => 1)
 tabs = {
-  'Objects' => TkFrame.new(notebook),
-  'Menu' => TkFrame.new(notebook),
-  'Effects' => TkFrame.new(notebook),
-  'Editor' => TkFrame.new(notebook),
-  'Timebar' => TkFrame.new(notebook),
-  'Others' => TkFrame.new(notebook)
+  'Objects' => TkFrame.new(notebook).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns'),
+  'Menu' => TkFrame.new(notebook).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns'),
+  'Effects' => TkFrame.new(notebook).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns'),
+  'Editor' => TkFrame.new(notebook).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns'),
+  'Timebar' => TkFrame.new(notebook).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns'),
+  'Others' => TkFrame.new(notebook).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns')
 }
-tabs.each do |tab, frame|
-  notebook.add(frame, 'text' => tab)
-end
-$objects['background'].each_with_index{ |o, i| ColorSelection.new(tabs['Objects'], o, i, 0) }
-$objects['timeBar'].each_with_index{ |o, i| ColorSelection.new(tabs['Timebar'], o, i, 0) }
+tabs.each{ |tab, frame|
+  frame.grid_rowconfigure(0, 'weight' => 1)
+  frame.grid_columnconfigure(0, 'weight' => 1)
+}
+frames = tabs.map{ |tab, frame| [tab, TkFrame.new(frame).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns')] }.to_h
+scrolls = tabs.map{ |tab, frame| [tab, TkScrollbar.new(frame).grid('row' => 0, 'column' => 1, 'sticky' => 'ns')] }.to_h
+tabs.each{ |tab, frame| notebook.add(frame, 'text' => tab) }
+$objects['background'].each_with_index{ |o, i| ColorSelection.new(frames['Objects'], o, i, 0) }
+$objects['timeBar'].each_with_index{ |o, i| ColorSelection.new(frames['Timebar'], o, i, 0) }
 
 def create_file(name: "themeImage", colors: ["4D564F", "87948C"], folder: Dir.pwd)
   Dir.chdir(folder) do
@@ -139,7 +147,7 @@ def parse_palette
   ColorSelection.update_colors
 end
 
-$palette_name = TkEntry.new($root).insert(0, 'palette_name').pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
-TkButton.new($root, 'text' => 'Create palette', 'command' => (proc{ create_palette })).pack('side' => 'top', 'fill' => 'x', 'expand' => 1)
+$palette_name = TkEntry.new($root).insert(0, 'palette_name').grid('row' => 2, 'column' => 0, 'sticky' => 'ew')
+TkButton.new($root, 'text' => 'Create palette', 'command' => (proc{ create_palette })).grid('row' => 3, 'column' => 0, 'sticky' => 'ew')
 
 Tk.mainloop
