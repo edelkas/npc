@@ -43,26 +43,64 @@ class ColorSelection < TkFrame
   end
 end
 
+class ElementList < TkListbox
+  def initialize(frame, tab, list)
+    super(frame, 'width' => 15, 'listvariable' => TkVariable.new(list), 'selectmode' => 'single')
+    @list = list
+    @tab = tab
+    self.bind("Button-1"){ change_frame }
+  end
+
+  def change_frame
+    $frames[@tab].each{ |e, frame| frame.grid_remove }
+    $frames[@tab][self.get("active").to_s].grid
+    print(self.get("active").to_s)
+  end
+end
+
 notebook = Tk::Tile::Notebook.new($root).grid('row' => 1, 'column' => 0, 'sticky' => 'ewns')
 notebook.grid_rowconfigure(0, 'weight' => 1)
 notebook.grid_columnconfigure(0, 'weight' => 1)
 tabs = {
   'Objects' => TkFrame.new(notebook).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns'),
   'Menu' => TkFrame.new(notebook).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns'),
-  'Effects' => TkFrame.new(notebook).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns'),
   'Editor' => TkFrame.new(notebook).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns'),
   'Timebar' => TkFrame.new(notebook).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns'),
-  'Others' => TkFrame.new(notebook).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns')
+  'Headbands' => TkFrame.new(notebook).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns'),
+  'Effects' => TkFrame.new(notebook).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns')
 }
 tabs.each{ |tab, frame|
   frame.grid_rowconfigure(0, 'weight' => 1)
-  frame.grid_columnconfigure(0, 'weight' => 1)
+  frame.grid_columnconfigure(1, 'weight' => 1)
 }
-frames = tabs.map{ |tab, frame| [tab, TkFrame.new(frame).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns')] }.to_h
-scrolls = tabs.map{ |tab, frame| [tab, TkScrollbar.new(frame).grid('row' => 0, 'column' => 1, 'sticky' => 'ns')] }.to_h
 tabs.each{ |tab, frame| notebook.add(frame, 'text' => tab) }
-$objects['background'].each_with_index{ |o, i| ColorSelection.new(frames['Objects'], o, i, 0) }
-$objects['timeBar'].each_with_index{ |o, i| ColorSelection.new(frames['Timebar'], o, i, 0) }
+
+$elements = {
+  'Objects' => [
+    {name: 'background', title: 'Background'},
+    {name: 'ninja', title: 'Ninja'},
+    {name: 'entityMine', title: 'Mine'},
+    {name: 'entityGold', title: 'Gold'},
+    {name: 'entityDoorExitSwitch', title: 'Exit switch'},
+    {name: 'entityDoorExit', title: 'Exit door'}
+  ],
+  'Menu' => [],
+  'Editor' => [],
+  'Timebar' => [],
+  'Headbands' => [],
+  'Effects' => []
+}
+$lists = tabs.map{ |tab, frame| [tab, ElementList.new(frame, tab, $elements[tab].map{ |e| e[:title] }).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns')] }.to_h
+$frames = $elements.map{ |tab, els|
+  tab_frames = els.map{ |e| [e[:title], TkFrame.new(tabs[tab]).grid('row' => 0, 'column' => 1, 'sticky' => 'ewns')] }.to_h
+  [tab, tab_frames]
+}.to_h
+
+$elements.each{ |tab, els|
+  els.each{ |e|
+    $objects[e[:name]].each_with_index{ |o, i| ColorSelection.new($frames[tab][e[:title]], o, i, 0) }
+  }
+}
 
 def create_file(name: "themeImage", colors: ["4D564F", "87948C"], folder: Dir.pwd)
   Dir.chdir(folder) do
@@ -147,7 +185,12 @@ def parse_palette
   ColorSelection.update_colors
 end
 
+def test
+  print($lists['Objects'].get("active").to_s)
+end
+
 $palette_name = TkEntry.new($root).insert(0, 'palette_name').grid('row' => 2, 'column' => 0, 'sticky' => 'ew')
 TkButton.new($root, 'text' => 'Create palette', 'command' => (proc{ create_palette })).grid('row' => 3, 'column' => 0, 'sticky' => 'ew')
+TkButton.new($root, 'text' => 'TEST', 'command' => (proc{ test })).grid('row' => 4, 'column' => 0, 'sticky' => 'ew')
 
 Tk.mainloop
