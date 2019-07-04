@@ -156,6 +156,10 @@ $elements.each{ |tab, els|
     end
   }
 }
+$lists.each{ |tab, list|
+  list.selection_set(0)
+  list.change_frame
+}
 
 def create_file(name: "themeImage", colors: ["4D564F", "87948C"], folder: Dir.pwd)
   Dir.chdir(folder) do
