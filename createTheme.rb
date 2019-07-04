@@ -2,6 +2,7 @@ require 'tk'
 require_relative 'colors.rb'
 
 $root = TkRoot.new('title' => 'N++ Palette Creator')
+$root.minsize(480,480)
 $root.grid_rowconfigure(1, 'weight' => 1)
 $root.grid_columnconfigure(0, 'weight' => 1)
 
@@ -23,7 +24,7 @@ class ColorSelection < TkFrame
     }
     @button.command(proc{ change_color })
     @button.pack('side' => 'left')
-    @text = TkLabel.new(self, 'anchor' => 'w', 'text' => object[:text], 'wraplength' => 300).pack('side' => 'left')
+    @text = TkLabel.new(self, 'anchor' => 'w', 'justify' => 'left', 'text' => object[:text], 'wraplength' => 800).pack('side' => 'left')
     self.grid('row' => row, 'column' => column, 'sticky' => 'w')
     @@blocks << self
   end
@@ -45,16 +46,15 @@ end
 
 class ElementList < TkListbox
   def initialize(frame, tab, list)
-    super(frame, 'width' => 15, 'listvariable' => TkVariable.new(list), 'selectmode' => 'single')
+    super(frame, 'width' => 20, 'listvariable' => TkVariable.new(list), 'selectmode' => 'single')
     @list = list
     @tab = tab
-    self.bind("Button-1"){ change_frame }
+    self.bind("Double-Button-1"){ change_frame }
   end
 
   def change_frame
     $frames[@tab].each{ |e, frame| frame.grid_remove }
     $frames[@tab][self.get("active").to_s].grid
-    print(self.get("active").to_s)
   end
 end
 
@@ -81,14 +81,38 @@ $elements = {
     {name: 'ninja', title: 'Ninja'},
     {name: 'entityMine', title: 'Mine'},
     {name: 'entityGold', title: 'Gold'},
+    {name: 'entityDoorExit', title: 'Exit door'},
     {name: 'entityDoorExitSwitch', title: 'Exit switch'},
-    {name: 'entityDoorExit', title: 'Exit door'}
+    {name: 'entityDoorRegular', title: 'Regular door'},
+    {name: 'entityDoorLocked', title: 'Locked door'},
+    {name: 'entityDoorTrap', title: 'Trap door'},
+    {name: 'entityLaunchPad', title: 'Launchpad'},
+    {name: 'entityOneWayPlatform', title: 'Oneway platform'},
+    {name: 'entityDroneChaingun', title: 'Chaingun Drone'},
+    {name: 'entityDroneLaser', title: 'Laser drone'},
+    {name: 'entityDroneZap', title: 'Zap drone'},
+    {name: 'entityDroneChaser', title: 'Chaser drone'},
+    {name: 'entityFloorGuard', title: 'Floorguard'},
+    {name: 'entityBounceBlock', title: 'Bounce block'},
+    {name: 'entityRocket', title: 'Rocket'},
+    {name: 'entityTurret', title: 'Gauss turret'},
+    {name: 'entityThwomp', title: 'Thwump'},
+    {name: 'entityEvilNinja', title: 'Evil ninja'},
+    {name: 'entityDualLaser', title: 'Laser turret'},
+    {name: 'entityBoostPad', title: 'Boost pad'},
+    {name: 'entityBat', title: 'Deathball'},
+    {name: 'entityEyeBat', title: 'Mini'},
+    {name: 'entityShoveThwomp', title: 'Shove thwump'}
   ],
   'Menu' => [],
   'Editor' => [],
   'Timebar' => [],
   'Headbands' => [],
-  'Effects' => []
+  'Effects' => [
+    {name: 'fxDroneZap', title: 'Drone zapping'},
+    {name: 'fxFloorguardZap', title: 'Floorguard zapping'},
+    {name: 'fxNinja', title: 'Ground dust'}
+  ]
 }
 $lists = tabs.map{ |tab, frame| [tab, ElementList.new(frame, tab, $elements[tab].map{ |e| e[:title] }).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns')] }.to_h
 $frames = $elements.map{ |tab, els|
@@ -185,12 +209,7 @@ def parse_palette
   ColorSelection.update_colors
 end
 
-def test
-  print($lists['Objects'].get("active").to_s)
-end
-
 $palette_name = TkEntry.new($root).insert(0, 'palette_name').grid('row' => 2, 'column' => 0, 'sticky' => 'ew')
 TkButton.new($root, 'text' => 'Create palette', 'command' => (proc{ create_palette })).grid('row' => 3, 'column' => 0, 'sticky' => 'ew')
-TkButton.new($root, 'text' => 'TEST', 'command' => (proc{ test })).grid('row' => 4, 'column' => 0, 'sticky' => 'ew')
 
 Tk.mainloop
