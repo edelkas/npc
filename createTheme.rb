@@ -3,6 +3,7 @@ require_relative 'colors.rb'
 
 $root = TkRoot.new('title' => 'N++ Palette Creator')
 $root.minsize(480,480)
+$root.geometry("480x480")
 $root.grid_rowconfigure(1, 'weight' => 1)
 $root.grid_columnconfigure(0, 'weight' => 1)
 
@@ -113,9 +114,26 @@ $elements = {
     {name: 'menu', title: 'Profile', indexes: [14, 15]},
     {name: 'menu', title: 'Other texts', indexes: [24, 28, 34, 35, 38, 40, 41]}
   ],
-  'Editor' => [],
-  'Timebar' => [],
-  'Headbands' => [],
+  'Editor' => [
+    {name: 'editor', title: 'Lines', indexes: [0, 2, 5]},
+    {name: 'editor', title: 'Selections', indexes: [3, 6, 7, 8]},
+    {name: 'editor', title: 'Others', indexes: [1, 4, 9]}
+  ],
+  'Timebar' => [
+    {name: 'timeBar', title: 'Solo timebar', indexes: [0, 2, 4, 6]},
+    {name: 'timeBar', title: 'Hardcore timebar', indexes: [1]},
+    {name: 'timeBarRace', title: 'Race timebar (P1)', indexes: [1, 5, 6, 7]},
+    {name: 'timeBarRace', title: 'Race timebar (P2)', indexes: [2, 8, 9, 10]},
+    {name: 'timeBarRace', title: 'Race timebar (P3)', indexes: [3, 11, 12, 13]},
+    {name: 'timeBarRace', title: 'Race timebar (P4)', indexes: [4, 14, 15, 16]},
+    {name: 'timeBar', title: 'Others', indexes: [3, 5, 7]}
+  ],
+  'Headbands' => [
+    {name: 'headbands', title: 'Headbands', indexes: [0, 2, 4, 6]},
+    {name: 'headbands', title: 'Unknown', indexes: [1, 3, 5, 7]},
+    {name: 'headbands', title: 'More unknown', indexes: [8, 9, 10, 11]},
+    {name: 'headbands', title: 'Even more unknown', indexes: [12, 13, 14, 15, 16]}
+  ],
   'Effects' => [
     {name: 'explosions', title: 'Explosions'},
     {name: 'fxDroneZap', title: 'Drone zapping'},
@@ -123,12 +141,12 @@ $elements = {
     {name: 'fxNinja', title: 'Ground dust'}
   ]
 }
+
 $lists = tabs.map{ |tab, frame| [tab, ElementList.new(frame, tab, $elements[tab].map{ |e| e[:title] }).grid('row' => 0, 'column' => 0, 'sticky' => 'ewns')] }.to_h
 $frames = $elements.map{ |tab, els|
   tab_frames = els.map{ |e| [e[:title], TkFrame.new(tabs[tab]).grid('row' => 0, 'column' => 1, 'sticky' => 'ewns')] }.to_h
   [tab, tab_frames]
 }.to_h
-
 $elements.each{ |tab, els|
   els.each{ |e|
     if e.key?(:indexes)
