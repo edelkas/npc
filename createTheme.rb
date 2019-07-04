@@ -104,11 +104,20 @@ $elements = {
     {name: 'entityEyeBat', title: 'Mini'},
     {name: 'entityShoveThwomp', title: 'Shove thwump'}
   ],
-  'Menu' => [],
+  'Menu' => [
+    {name: 'menu', title: 'Menus', indexes: [0, 3, 4, 10, 17, 29]},
+    {name: 'menu', title: 'Tabs', indexes: [8, 12, 25, 26, 27, 31, 33, 37]},
+    {name: 'menu', title: 'Leaderboards', indexes: [1, 2, 13, 16, 32]},
+    {name: 'menu', title: 'Episode / Levels', indexes: [5, 7, 9, 22, 23, 30]},
+    {name: 'menu', title: 'Pause menu', indexes: [18, 19, 20, 21]},
+    {name: 'menu', title: 'Profile', indexes: [14, 15]},
+    {name: 'menu', title: 'Other texts', indexes: [24, 28, 34, 35, 38, 40, 41]}
+  ],
   'Editor' => [],
   'Timebar' => [],
   'Headbands' => [],
   'Effects' => [
+    {name: 'explosions', title: 'Explosions'},
     {name: 'fxDroneZap', title: 'Drone zapping'},
     {name: 'fxFloorguardZap', title: 'Floorguard zapping'},
     {name: 'fxNinja', title: 'Ground dust'}
@@ -122,7 +131,11 @@ $frames = $elements.map{ |tab, els|
 
 $elements.each{ |tab, els|
   els.each{ |e|
-    $objects[e[:name]].each_with_index{ |o, i| ColorSelection.new($frames[tab][e[:title]], o, i, 0) }
+    if e.key?(:indexes)
+      get_objects(e[:name], e[:indexes]).each_with_index{ |o, i| ColorSelection.new($frames[tab][e[:title]], o, i, 0) }
+    else
+      get_objects(e[:name]).each_with_index{ |o, i| ColorSelection.new($frames[tab][e[:title]], o, i, 0) }
+    end
   }
 }
 

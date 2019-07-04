@@ -304,3 +304,11 @@ $objects = {
   'entityEyeBat' => entityEyeBat,
   'entityShoveThwomp' => entityShoveThwomp
 }
+
+def get_objects(file, indexes = [])
+  if !indexes.empty?
+    $objects[file].each_with_index.select{ |element, index| indexes.include?(index) }.map(&:first)
+  else
+    $objects[file]
+  end
+end
