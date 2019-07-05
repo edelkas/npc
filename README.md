@@ -1,5 +1,7 @@
 # N++ Palette Creator - Eddy 2019
 
+![N++ Palette Creator Image](image.png)
+
 ### How to use:
 * Load a palette by clicking the **Load Palette** button, a folder selection dialog will open.
 * The colors are classified in tabs, and each tab has a list. **Double-click** on the list elements to view the colors for that element (e.g. *Objects* -> *Exit door*).
