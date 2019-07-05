@@ -25,7 +25,7 @@ class ColorSelection < TkFrame
     }
     @button.command(proc{ change_color })
     @button.pack('side' => 'left')
-    @text = TkLabel.new(self, 'anchor' => 'w', 'justify' => 'left', 'text' => object[:text], 'wraplength' => 800).pack('side' => 'left')
+    @text = TkLabel.new(self, 'anchor' => 'w', 'justify' => 'left', 'text' => object[:text], 'wraplength' => 700).pack('side' => 'left')
     self.grid('row' => row, 'column' => column, 'sticky' => 'w')
     @@blocks << self
   end
