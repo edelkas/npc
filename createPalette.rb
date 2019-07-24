@@ -163,7 +163,7 @@ $lists.each{ |tab, list|
 
 def create_file(name: "themeImage", colors: ["4D564F", "87948C"], folder: Dir.pwd)
   Dir.chdir(folder) do
-    File.open(name + ".tga", "w") do |f|
+    File.open(name + ".tga", "wb") do |f|
       header = {}
       header["id_length"] = "\x00" # none
       header["colormap_type"] = "\x00" # none
